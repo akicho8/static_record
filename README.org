@@ -1,0 +1,106 @@
+#+OPTIONS: toc:nil num:nil author:nil creator:nil \n:nil |:t
+#+OPTIONS: @:t ::t ^:t -:t f:t *:t <:t
+
+* 少数のレコードに対してシンボルまたは数値で高速に参照するライブラリ
+
+: class Direction
+:   include StaticRecord
+: 
+:   static_record [
+:     {:key => :up,    :name => "上", :arrow => "↑", :vector => [ 0, -1]},
+:     {:key => :down,  :name => "下", :arrow => "↓", :vector => [ 0,  1]},
+:     {:key => :left,  :name => "左", :arrow => "←", :vector => [-1,  0]},
+:     {:key => :right, :name => "右", :arrow => "→", :vector => [ 1,  0]},
+:   ], :attr_reader => [:name, :arrow, :vector]
+: 
+:   def char
+:     key[0]
+:   end
+: end
+: 
+: Direction[:right].key           # => :right
+: Direction[:right].code          # => 3
+: Direction[3].key                # => :right
+: 
+: Direction[4]                    # => nil
+: Direction[nil]                  # => nil
+: 
+: Direction[:right].char          # => "r"
+: 
+: Direction.first.key             # => :up
+: Direction.to_a.last.key         # => :right
+: 
+: Direction.collect(&:name)       # => ["上", "下", "左", "右"]
+
+*** code を自分で決めたいときは？
+
+  : class Foo
+  :   include StaticRecord
+  :   static_record [
+  :     {:code => 1, :key => :a, :name => "A"},
+  :     {:code => 2, :key => :b, :name => "B"},
+  :     {:code => 3, :key => :c, :name => "C"},
+  :   ], :attr_reader => :name
+  : end
+  : 
+  : Foo.collect(&:code) # => [1, 2, 3]
+
+*** 配列として回すには？
+
+Enumerable が入っているので each 系メソッドが利用可
+
+  : Foo.each{|v|...}
+  : Foo.collect{|v|...}
+
+*** Railsでフォームの select に出すときは？
+
+  : form.collection_select(:selection_code, Foo, :code, :name)
+
+*** 添字での参照は遅い？
+
+    内部的にはハッシュに変換しているので O(n) よりは早い
+
+  : Foo[1].name  # => "A"
+  : Foo[:a].name # => "A"
+
+*** インスタンスは code と key に必ず反応する？
+
+    する
+
+  : object = Foo.first
+  : object.key  # => :a
+  : object.code # => 1
+
+*** attr_reader オプションとは？
+
+    属性は @attributes[:xxx] で参照できるが、頻繁に参照するときには面倒なので :attr_reader => :xxx でメソッド化している。
+
+*** レコードの属性に気軽にアクセスさせたくないときは？
+
+  attr_reader でメソッド定義せず object.attributes[:xxx] で参照する
+
+*** インスタンスにメソッドを追加するには？
+
+    そのために新しくクラスを作っているので普通に定義すればいい
+
+*** name メソッドは特別？
+
+    name が定義されてなかったら key の翻訳を返す name メソッドを定義している
+
+*** to_s メソッドが定義されている？
+
+    name の別名で to_s を定義しているので name のままでいいなら "#{selection}" と書いていい
+
+*** 動的に変わる検索条件リストを作るには？
+
+  : selection = StaticRecord.define(:attr_reader => :name) do
+  :   [
+  :     {:key => :a, :name => "A"},
+  :     {:key => :b, :name => "B"},
+  :     {:key => :c, :name => "C"},
+  :   ]
+  : end
+  : 
+  : selection.first.key # => :a
+
+    StaticRecord.define で無名クラスが返ってくる。
