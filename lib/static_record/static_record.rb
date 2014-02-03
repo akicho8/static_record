@@ -131,17 +131,12 @@ module StaticRecord
       #   FooInfo[:a]               # => object
       #   FooInfo[0] == FooInfo[:a] # => true
       def [](arg)
-        fetch(arg)
+        lookup(arg)
       end
 
       # [] と同じだけど引数や戻値がなければ例外を投げる
-      def find(arg)
-        fetch(arg, :validation => true)
-      end
-
-      # [] と同じだけど引数や戻値がなくても例外を投げない
-      def safe_find(arg)
-        fetch(arg, :validation => false)
+      def fetch(arg, validation: true)
+        lookup(arg, :validation => validation)
       end
 
       # FooInfo.each{|foo_info|...}
@@ -159,7 +154,7 @@ module StaticRecord
 
       private
 
-      def fetch(arg, options = {})
+      def lookup(arg, options = {})
         options = {
           :validation => static_record_configuration[:validation],
         }.merge(options)

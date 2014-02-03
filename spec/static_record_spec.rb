@@ -78,7 +78,7 @@ describe do
   end
 
   it "添字や結果がおかしいときエラーにしたりしなかったり" do
-    expect { FooInfo1.find(:unknown) }.to raise_error(ArgumentError)
-    FooInfo1.safe_find(:unknown).should == nil
+    expect { FooInfo1.fetch(:unknown) }.to raise_error(ArgumentError)
+    FooInfo1.fetch(:unknown, :validation => false).should == nil
   end
 end
