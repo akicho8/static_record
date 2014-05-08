@@ -59,17 +59,17 @@ require "static_record/version"
 module StaticRecord
   extend ActiveSupport::Concern
 
-  def self.create(*args, &block)
-    Class.new do
-      include StaticRecord
-      static_record *args, &block
-    end
-  end
-
   def self.define(options = {}, &block)
     Class.new do
       include StaticRecord
       static_record block.call, options
+    end
+  end
+
+  def self.create(*args, &block)
+    Class.new do
+      include StaticRecord
+      static_record *args, &block
     end
   end
 
@@ -84,7 +84,7 @@ module StaticRecord
       class_attribute :static_record_configuration
       self.static_record_configuration = {
         :attr_reader => [],    # 提供するインターフェイス
-        :validation  => false, # 添字が、空だったり、結果が nil の場合はエラーにする？
+        :validation  => false, # 添字が、空だったり、結果が nil の場合はエラーにするか？
       }.merge(options)
 
       if block_given?
@@ -93,7 +93,7 @@ module StaticRecord
 
       # code と key は指定がなければインデックスを元にしたユニークな値を割り振っていく
       Array.wrap(options[:attr_reader]).each do |k|
-        define_method(k){@attributes[k.to_sym]}
+        define_method(k) { @attributes[k.to_sym] }
       end
 
       # @pool も @pool_hash も外部アクセサを定義しないこと(重要)
@@ -101,10 +101,10 @@ module StaticRecord
       # code の初期値が欲しいので内部でインデックスを持つ
       @pool = list.collect.with_index{|a, i|new(a.merge(:_index => i))}
 
-      # 高速化のため一発で引けるテーブルを用意
+      # O(1) で引くためのテーブルを用意
       @pool_hash = {
-        :codes => @pool.inject({}){|h, v|h.merge(v.code => v)},
-        :keys  => @pool.inject({}){|h, v|h.merge(v.key => v)},
+        :codes => @pool.inject({}){|h, v| h.merge(v.code => v) },
+        :keys  => @pool.inject({}){|h, v| h.merge(v.key => v) },
       }
 
       # name に反応できなければ key からの翻訳をデフォルトにする(オーバーライド推奨)
