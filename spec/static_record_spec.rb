@@ -77,8 +77,11 @@ describe do
     StaticRecord.create([{:key => [:id, :desc]}]).keys.should == [:id_desc]
   end
 
-  it "添字や結果がおかしいときエラーにしたりしなかったり" do
-    expect { FooInfo1.fetch(:unknown) }.to raise_error(ArgumentError)
-    FooInfo1.fetch(:unknown, :validation => false).should == nil
+  it "対応するキーがなくなてもエラーにならない" do
+    expect { FooInfo1[:unknown] }.not_to raise_error
+  end
+
+  it "対応するキーがなければエラーになる" do
+    expect { FooInfo1.fetch(:unknown) }.to raise_error(KeyError)
   end
 end

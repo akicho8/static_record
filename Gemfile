@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
-ruby '2.1.0'
+ruby '2.1.1'
 
-# Specify your gem's dependencies in static_record.gemspec
 gemspec

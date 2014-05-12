@@ -84,7 +84,6 @@ module StaticRecord
       class_attribute :static_record_configuration
       self.static_record_configuration = {
         :attr_reader => [],    # 提供するインターフェイス
-        :validation  => false, # 添字が、空だったり、結果が nil の場合はエラーにするか？
       }.merge(options)
 
       if block_given?
@@ -134,9 +133,21 @@ module StaticRecord
         lookup(arg)
       end
 
-      # [] と同じだけど引数や戻値がなければ例外を投げる
-      def fetch(arg, validation: true)
-        lookup(arg, :validation => validation)
+      # [] と同じだけど戻値がなければ例外を投げる
+      def fetch(key, default = nil, &block)
+        raise ArgumentError if block_given? && default
+        v = lookup(key)
+        unless v
+          case
+          when block_given?
+            v = yield
+          when default
+            v = default
+          else
+            raise KeyError, "#{name}.fetch(#{key.inspect}) では何にもマッチしません。\nkeys: #{keys.inspect}, codes: #{codes.inspect}"
+          end
+        end
+        v
       end
 
       # FooInfo.each{|foo_info|...}
@@ -148,33 +159,26 @@ module StaticRecord
         @keys ||= @pool_hash[:keys].keys
       end
 
+      def codes
+        @codes ||= @pool_hash[:codes].keys
+      end
+
       def values
         @pool
       end
 
       private
 
-      def lookup(arg, options = {})
-        options = {
-          :validation => static_record_configuration[:validation],
-        }.merge(options)
-
-        if arg.kind_of? self
-          return arg
+      def lookup(key)
+        if key.kind_of? self
+          return key
         end
-        if options[:validation] && arg.blank?
-          raise ArgumentError, "添字が空です : #{arg.inspect}"
-        end
-        case arg
+        case key
         when Symbol, String
-          v = @pool_hash[:keys][arg.to_sym]
+          @pool_hash[:keys][key.to_sym]
         else
-          v = @pool_hash[:codes][arg]
+          @pool_hash[:codes][key]
         end
-        if options[:validation] && v.nil?
-          raise ArgumentError, "#{name}[#{arg.inspect}] の結果が #{v.inspect} です"
-        end
-        v
       end
     end
 

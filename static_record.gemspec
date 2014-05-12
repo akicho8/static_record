@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = StaticRecord::VERSION
   spec.authors       = ["akicho8"]
   spec.email         = ["akicho8@gmail.com"]
-  spec.description   = %q{Write a gem description}
-  spec.summary       = %q{Write a gem summary}
+  spec.description   = %q{Model that can be accessed even as an array as a hash}
+  spec.summary       = %q{Model dealing with record of static fractional}
   spec.homepage      = ""
   spec.license       = "MIT"
 
