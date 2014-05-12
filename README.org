@@ -18,12 +18,15 @@
 :   end
 : end
 : 
+: Direction.keys                  # => [:up, :down, :left, :right]
+: 
 : Direction[:right].key           # => :right
 : Direction[:right].code          # => 3
 : Direction[3].key                # => :right
 : 
 : Direction[4]                    # => nil
 : Direction[nil]                  # => nil
+: Direction.fetch(4)              # => ArgumentError
 : 
 : Direction[:right].char          # => "r"
 : 
@@ -104,3 +107,13 @@ Enumerable が入っているので each 系メソッドが利用可
   : selection.first.key # => :a
 
     StaticRecord.define で無名クラスが返ってくる。
+
+*** キーがなければエラーとするには？
+
+  : Foo.fetch(:unknown)           # => ArgumentError
+
+    以下は全部同じ
+
+  : Foo[:unknown] || :default     # => :default
+  : Foo.fetch(:unknown, :default} # => :default
+  : Foo.fetch(:unknown){:default} # => :default
