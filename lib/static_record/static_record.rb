@@ -1,54 +1,22 @@
 # -*- coding: utf-8 -*-
-# 定数の名前を参照できない問題に対応するためのモジュール
+# 少ない数のレコードを配列やハッシュとして管理するライブラリ
 #
-#   一般的な使い方
-#
-#     class FooInfo
+#     class Foo
 #       include StaticRecord
 #       static_record [
-#         {:code => 1, :key => :a, :name => "A"},
-#         {:code => 2, :key => :b, :name => "B"},
-#         {:code => 3, :key => :c, :name => "C"},
-#       ], :attr_reader => :name
+#         {:key => :left,  :name => "左", :vector => -1},
+#         {:key => :right, :name => "右", :vecotr => 1},
+#       ], :attr_reader => [:name, :vector]
 #     end
 #
-#     class Card
-#       def foo_info
-#         FooInfo[foo_code]
-#       end
-#     end
+#     Foo[0].key     # => :left
+#     Foo[0].name    # => "左"
+#     Foo[0].vector  # => -1
+#     Foo[0].code    # => 0
 #
-#   全体を取得するときは Enumerable 系メソッドがあるのでどうにでもなる
-#     配列化
-#       FooInfo.each{|v|...}
-#     フォームのプルダウンに出すとき
-#       <%= form.collection_select(:foo_code, FooInfo, :code, :name) %>
+#     Foo.count           # => 2
+#     Foo.collect(&:name) # => "左", "右"
 #
-#   ダイレクトに参照するには？
-#
-#     FooInfo[1].name  # => "A"
-#     FooInfo[:a].name # => "A"
-#
-#   インスタンスメソッドは code と key は必ず存在する。
-#
-#     object = FooInfo[:a]
-#     object.key  # => :a
-#     object.code # => 1
-#
-#     あと引数に渡したものを単純にメソッド化する :attr_reader => :name を指定していたら、
-#
-#       object.name # => "A"
-#
-#     も使える
-#
-#     あと :a ならランダムで赤っぽい色を返したいような場合は、そういうインスタンスメソッドを定義すればいい
-#     (ただ、なるべくポルモルフィックにして冗長な条件分岐は避けること)
-#
-#     name の別名で to_s を定義しているので name のままでいいなら "#{foo_info}" と書ける
-#
-#     key と code も空なら自動的に振っていく(空にするカラムはすべてのレコードを未指定にしておくこと)
-#
-
 require "active_support/concern"
 require "active_support/core_ext/class/attribute"
 require "active_support/core_ext/array/wrap"
@@ -59,7 +27,7 @@ require "static_record/version"
 module StaticRecord
   extend ActiveSupport::Concern
 
-  def self.define(options = {}, &block)
+  def self.define(**options, &block)
     Class.new do
       include StaticRecord
       static_record block.call, options
@@ -74,7 +42,7 @@ module StaticRecord
   end
 
   module ClassMethods
-    def static_record(list, options = {}, &block)
+    def static_record(list, **options, &block)
       return if static_record_defined?
 
       extend ActiveModel::Translation
@@ -83,7 +51,7 @@ module StaticRecord
 
       class_attribute :static_record_configuration
       self.static_record_configuration = {
-        :attr_reader => [],    # 提供するインターフェイス
+        :attr_reader => [],
       }.merge(options)
 
       if block_given?
@@ -126,9 +94,11 @@ module StaticRecord
       end
 
       # 直接参照
-      #   FooInfo[0]                # => object
-      #   FooInfo[:a]               # => object
-      #   FooInfo[0] == FooInfo[:a] # => true
+      #
+      #   Foo[0]                # => object
+      #   Foo[:a]               # => object
+      #   Foo[0] == Foo[:a] # => true
+      #
       def [](arg)
         lookup(arg)
       end
@@ -144,13 +114,12 @@ module StaticRecord
           when default
             v = default
           else
-            raise KeyError, "#{name}.fetch(#{key.inspect}) では何にもマッチしません。\nkeys: #{keys.inspect}, codes: #{codes.inspect}"
+            raise KeyError, "#{name}.fetch(#{key.inspect}) では何にもマッチしません。\nkeys: #{keys.inspect}\ncodes: #{codes.inspect}"
           end
         end
         v
       end
 
-      # FooInfo.each{|foo_info|...}
       def each(&block)
         @pool.each(&block)
       end
