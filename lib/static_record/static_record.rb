@@ -58,26 +58,15 @@ module StaticRecord
         yield static_record_configuration
       end
 
-      # code と key は指定がなければインデックスを元にしたユニークな値を割り振っていく
-      Array.wrap(options[:attr_reader]).each do |k|
-        define_method(k) { @attributes[k.to_sym] }
+      Array.wrap(options[:attr_reader]).each do |key|
+        define_method(key) { @attributes[key.to_sym] }
       end
 
-      # @pool も @pool_hash も外部アクセサを定義しないこと(重要)
-
-      # code の初期値が欲しいので内部でインデックスを持つ
-      @pool = list.collect.with_index{|a, i|new(a.merge(:_index => i))}
-
-      # O(1) で引くためのテーブルを用意
-      @pool_hash = {
-        :codes => @pool.inject({}){|h, v| h.merge(v.code => v) },
-        :keys  => @pool.inject({}){|h, v| h.merge(v.key => v) },
-      }
-
-      # name に反応できなければ key からの翻訳をデフォルトにする(オーバーライド推奨)
       unless method_defined?(:name)
         define_method(:name) { self.class.human_attribute_name(key) }
       end
+
+      static_record_list_set(list)
     end
 
     def static_record_defined?
@@ -95,8 +84,8 @@ module StaticRecord
 
       # 直接参照
       #
-      #   Foo[0]                # => object
-      #   Foo[:a]               # => object
+      #   Foo[0]            # => object
+      #   Foo[:a]           # => object
       #   Foo[0] == Foo[:a] # => true
       #
       def [](arg)
@@ -148,6 +137,16 @@ module StaticRecord
         else
           @pool_hash[:codes][key]
         end
+      end
+
+      def static_record_list_set(list)
+        @keys = nil
+        @codes = nil
+        @pool = list.collect.with_index{|a, i|new(a.merge(:_index => i))}
+        @pool_hash = {
+          :codes => @pool.inject({}){|h, v| h.merge(v.code => v) },
+          :keys  => @pool.inject({}){|h, v| h.merge(v.key  => v) },
+        }
       end
     end
 
