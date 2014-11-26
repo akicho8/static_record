@@ -125,6 +125,16 @@ module StaticRecord
         @pool
       end
 
+      def static_record_list_set(list)
+        @keys = nil
+        @codes = nil
+        @pool = list.collect.with_index{|a, i|new(a.merge(:_index => i))}
+        @pool_hash = {
+          :codes => @pool.inject({}){|h, v| h.merge(v.code => v) },
+          :keys  => @pool.inject({}){|h, v| h.merge(v.key  => v) },
+        }
+      end
+
       private
 
       def lookup(key)
@@ -137,16 +147,6 @@ module StaticRecord
         else
           @pool_hash[:codes][key]
         end
-      end
-
-      def static_record_list_set(list)
-        @keys = nil
-        @codes = nil
-        @pool = list.collect.with_index{|a, i|new(a.merge(:_index => i))}
-        @pool_hash = {
-          :codes => @pool.inject({}){|h, v| h.merge(v.code => v) },
-          :keys  => @pool.inject({}){|h, v| h.merge(v.key  => v) },
-        }
       end
     end
 

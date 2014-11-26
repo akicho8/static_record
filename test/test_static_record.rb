@@ -81,11 +81,11 @@ class TestStaticRecord < Test::Unit::TestCase
     assert_raises { FooInfo1.fetch(:unknown) }
   end
 
-  test "あとから更新できる。けどあんまり使ってほしくない" do
+  test "再設定する" do
     obj = StaticRecord.define{[{key: :a}]}
     assert_equal [:a], obj.keys
     assert_equal [0], obj.codes
-    obj.send(:static_record_list_set, [{key: :b}, {key: :c}])
+    obj.static_record_list_set [{key: :b}, {key: :c}]
     assert_equal [:b, :c], obj.keys
     assert_equal [0, 1], obj.codes
   end
