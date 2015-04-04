@@ -3,76 +3,88 @@
 
 * 少数のレコードに対してシンボルまたは数値で高速に参照するライブラリ
 
-: class Direction
-:   include StaticRecord
-: 
-:   static_record [
-:     {:key => :up,    :name => "上", :arrow => "↑", :vector => [ 0, -1]},
-:     {:key => :down,  :name => "下", :arrow => "↓", :vector => [ 0,  1]},
-:     {:key => :left,  :name => "左", :arrow => "←", :vector => [-1,  0]},
-:     {:key => :right, :name => "右", :arrow => "→", :vector => [ 1,  0]},
-:   ], :attr_reader => [:name, :arrow, :vector]
-: 
-:   def char
-:     key[0]
-:   end
-: end
-: 
-: Direction.keys                  # => [:up, :down, :left, :right]
-: 
-: Direction[:right].key           # => :right
-: Direction[:right].code          # => 3
-: Direction[3].key                # => :right
-: 
-: Direction[4]                    # => nil
-: Direction[nil]                  # => nil
-: Direction.fetch(4)              # => ArgumentError
-: 
-: Direction[:right].char          # => "r"
-: 
-: Direction.first.key             # => :up
-: Direction.to_a.last.key         # => :right
-: 
-: Direction.collect(&:name)       # => ["上", "下", "左", "右"]
+#+BEGIN_SRC ruby
+class Direction
+  include StaticRecord
+
+  static_record [
+    {:key => :up,    :name => "上", :arrow => "↑", :vector => [ 0, -1]},
+    {:key => :down,  :name => "下", :arrow => "↓", :vector => [ 0,  1]},
+    {:key => :left,  :name => "左", :arrow => "←", :vector => [-1,  0]},
+    {:key => :right, :name => "右", :arrow => "→", :vector => [ 1,  0]},
+  ], :attr_reader => [:name, :arrow, :vector]
+
+  def char
+    key[0]
+  end
+end
+
+Direction.keys                  # => [:up, :down, :left, :right]
+
+Direction[:right].key           # => :right
+Direction[:right].code          # => 3
+Direction[3].key                # => :right
+
+Direction[4]                    # => nil
+Direction[nil]                  # => nil
+Direction.fetch(4)              # => ArgumentError
+
+Direction[:right].char          # => "r"
+
+Direction.first.key             # => :up
+Direction.to_a.last.key         # => :right
+
+Direction.collect(&:name)       # => ["上", "下", "左", "右"]
+#+END_SRC
 
 *** code を自分で決めたいときは？
 
-  : class Foo
-  :   include StaticRecord
-  :   static_record [
-  :     {:code => 1, :key => :a, :name => "A"},
-  :     {:code => 2, :key => :b, :name => "B"},
-  :     {:code => 3, :key => :c, :name => "C"},
-  :   ], :attr_reader => :name
-  : end
-  : 
-  : Foo.collect(&:code) # => [1, 2, 3]
+#+BEGIN_SRC ruby
+class Foo
+  include StaticRecord
+  static_record [
+    {:code => 1, :key => :a, :name => "A"},
+    {:code => 2, :key => :b, :name => "B"},
+    {:code => 3, :key => :c, :name => "C"},
+  ], :attr_reader => :name
+end
+
+Foo.collect(&:code) # => [1, 2, 3]
+#+END_SRC
+
+    レガシーなコードをリファクタリングするときの、互換性が必要なときにぐらいにしか使わない。
 
 *** 配列として回すには？
 
-Enumerable が入っているので each 系メソッドが利用可
+    Enumerable が入っているので each 系メソッドが利用可
 
-  : Foo.each{|v|...}
-  : Foo.collect{|v|...}
+#+BEGIN_SRC ruby
+Foo.each {|v| ... }
+Foo.collect {|v| ... }
+#+END_SRC
 
 *** Railsでフォームの select に出すときは？
 
-  : form.collection_select(:selection_code, Foo, :code, :name)
+#+BEGIN_SRC ruby
+form.collection_select(:selection_code, Foo, :code, :name)
+#+END_SRC
 
 *** 添字での参照は遅い？
 
-    ハッシュとしても保持しているため O(1) で取得できる
+    内部で key の値をキーとしたハッシュを持っているため O(1) で取得できる。
 
-  : Foo[1].name  # => "A"
-  : Foo[:a].name # => "A"
+#+BEGIN_SRC ruby
+Foo[1].name  # => "A"
+Foo[:a].name # => "A"
+#+END_SRC
 
-*** インスタンスは code と key に必ず反応する？
+*** インスタンスは code と key に必ず反応する
 
-    する
-
-  : object = Foo.first
-  : object.key  # => :a
-  : object.code # => 1
+#+BEGIN_SRC ruby
+object = Foo.first
+object.key  # => :a
+object.code # => 1
+#+END_SRC
 
 *** attr_reader オプションとは？
 
@@ -80,40 +92,46 @@ Enumerable が入っているので each 系メソッドが利用可
 
 *** レコードの属性に気軽にアクセスさせたくないときは？
 
-  attr_reader でメソッド定義せず object.attributes[:xxx] で参照する
+    attr_reader でメソッド定義せず object.attributes[:xxx] で参照する。
 
 *** インスタンスにメソッドを追加するには？
 
-    そのために新しくクラスを作っているので普通に定義すればいい
+    そのために新しくクラスを作っているので普通に定義すればいい。
 
 *** name メソッドは特別？
 
-    name が定義されてなかったら key の翻訳を返す name メソッドを定義している
+    name が定義されてなかったら key の翻訳を返す name メソッドを定義している。
 
 *** to_s メソッドが定義されている？
 
-    name の別名で to_s を定義しているので name のままでいいなら "#{selection}" と書いていい
+    name の別名で to_s を定義しているので name のままでいいなら "#{object}" と書いていい。
 
 *** 動的に変わる検索条件リストを作るには？
 
-  : selection = StaticRecord.define(:attr_reader => :name) do
-  :   [
-  :     {:key => :a, :name => "A"},
-  :     {:key => :b, :name => "B"},
-  :     {:key => :c, :name => "C"},
-  :   ]
-  : end
-  : 
-  : selection.first.key # => :a
+#+BEGIN_SRC ruby
+selection = StaticRecord.define(:attr_reader => :name) do
+  [
+    {:key => :a, :name => "A"},
+    {:key => :b, :name => "B"},
+    {:key => :c, :name => "C"},
+  ]
+end
+
+selection.first.key # => :a
+#+END_SRC
 
     StaticRecord.define で無名クラスが返ってくる。
 
 *** キーがなければエラーとするには？
 
-  : Foo.fetch(:unknown)           # => ArgumentError
+#+BEGIN_SRC ruby
+Foo.fetch(:unknown)           # => ArgumentError
+#+END_SRC
 
     以下は全部同じ
 
-  : Foo[:unknown] || :default     # => :default
-  : Foo.fetch(:unknown, :default} # => :default
-  : Foo.fetch(:unknown){:default} # => :default
+#+BEGIN_SRC ruby
+Foo[:unknown] || :default     # => :default
+Foo.fetch(:unknown, :default} # => :default
+Foo.fetch(:unknown){:default} # => :default
+#+END_SRC

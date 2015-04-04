@@ -22,8 +22,6 @@ require "active_support/core_ext/class/attribute"
 require "active_support/core_ext/array/wrap"
 require "active_model"
 
-require "static_record/version"
-
 module StaticRecord
   extend ActiveSupport::Concern
 
@@ -128,10 +126,10 @@ module StaticRecord
       def static_record_list_set(list)
         @keys = nil
         @codes = nil
-        @pool = list.collect.with_index{|a, i|new(a.merge(:_index => i))}
+        @pool = list.collect.with_index {|a, i| new(a.merge(:_index => i)) }
         @pool_hash = {
-          :codes => @pool.inject({}){|h, v| h.merge(v.code => v) },
-          :keys  => @pool.inject({}){|h, v| h.merge(v.key  => v) },
+          :codes => @pool.inject({}) {|h, v| h.merge(v.code => v) },
+          :keys  => @pool.inject({}) {|h, v| h.merge(v.key  => v) },
         }
       end
 
