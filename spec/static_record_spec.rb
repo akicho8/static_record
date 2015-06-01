@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'test_helper'
+require 'spec_helper'
 
 class FooInfo1
   include StaticRecord
@@ -40,48 +40,48 @@ FooInfo5 = StaticRecord.define do
   ]
 end
 
-class TestStaticRecord < Test::Unit::TestCase
-  test "コードやキーは自分で定義する場合" do
+RSpec.describe StaticRecord do
+  it "コードやキーは自分で定義する場合" do
     assert_equal "A", FooInfo1[10].name
   end
 
-  test "コードもキーも自動で振る場合" do
+  it "コードもキーも自動で振る場合" do
     assert_equal "A", FooInfo2[0].name
   end
 
-  test "キーの配列だけ欲しい" do
+  it "キーの配列だけ欲しい" do
     assert_equal [:_key0, :_key1], FooInfo2.keys
   end
 
-  test "値の配列" do
+  it "値の配列" do
     assert_equal FooInfo2.each.to_a, FooInfo2.values
   end
 
-  test "name メソッドは自動的に定義" do
+  it "name メソッドは自動的に定義" do
     assert_equal true, FooInfo3.instance_methods.include?(:name)
   end
 
-  test "create で無名クラスを返す" do
+  it "create で無名クラスを返す" do
     assert_equal :a, FooInfo4.first.key
   end
 
-  test "define で無名クラスを返す" do
+  it "define で無名クラスを返す" do
     assert_equal :a, FooInfo5.first.key
   end
 
-  test "キーは配列で指定するとアンダーバー付きのシンボルになる" do
+  it "キーは配列で指定するとアンダーバー付きのシンボルになる" do
     assert_equal [:id_desc], StaticRecord.create([{:key => [:id, :desc]}]).keys
   end
 
-  test "対応するキーがなくなてもエラーにならない" do
+  it "対応するキーがなくなてもエラーにならない" do
     assert_nothing_raised { FooInfo1[:unknown] }
   end
 
-  test "対応するキーがなければエラーになる" do
+  it "対応するキーがなければエラーになる" do
     assert_raises { FooInfo1.fetch(:unknown) }
   end
 
-  test "再設定する" do
+  it "再設定する" do
     obj = StaticRecord.define{[{key: :a}]}
     assert_equal [:a], obj.keys
     assert_equal [0], obj.codes
@@ -90,7 +90,7 @@ class TestStaticRecord < Test::Unit::TestCase
     assert_equal [0, 1], obj.codes
   end
 
-  test "キーに日本語が使える" do
+  it "キーに日本語が使える" do
     obj = StaticRecord.define{[{key: "↑"}]}
     assert obj["↑"]
   end
