@@ -89,4 +89,9 @@ class TestStaticRecord < Test::Unit::TestCase
     assert_equal [:b, :c], obj.keys
     assert_equal [0, 1], obj.codes
   end
+
+  test "キーに日本語が使える" do
+    obj = StaticRecord.define{[{key: "↑"}]}
+    assert obj["↑"]
+  end
 end
