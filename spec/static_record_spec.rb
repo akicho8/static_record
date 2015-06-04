@@ -40,6 +40,12 @@ FooInfo5 = StaticRecord.define do
   ]
 end
 
+FooInfo6 = StaticRecord.define(:attr_reader => :name, :support_key => :name) do
+  [
+    {:key => :a, :name => "名前"},
+  ]
+end
+
 RSpec.describe StaticRecord do
   it "コードやキーは自分で定義する場合" do
     assert_equal "A", FooInfo1[10].name
@@ -93,5 +99,9 @@ RSpec.describe StaticRecord do
   it "キーに日本語が使える" do
     obj = StaticRecord.define{[{key: "↑"}]}
     assert obj["↑"]
+  end
+
+  it "別のカラムもキーにできる" do
+    assert FooInfo6["名前"]
   end
 end
