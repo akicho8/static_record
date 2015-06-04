@@ -112,11 +112,11 @@ module StaticRecord
       end
 
       def keys
-        @keys ||= @pool_hash[:keys].keys
+        @keys ||= @pool_hash[:key].keys
       end
 
       def codes
-        @codes ||= @pool_hash[:codes].keys
+        @codes ||= @pool_hash[:code].keys
       end
 
       def values
@@ -128,8 +128,8 @@ module StaticRecord
         @codes = nil
         @pool = list.collect.with_index {|a, i| new(a.merge(:_index => i)) }
         @pool_hash = {
-          :codes => @pool.inject({}) {|h, v| h.merge(v.code => v) },
-          :keys  => @pool.inject({}) {|h, v| h.merge(v.key  => v) },
+          :code => @pool.inject({}) {|h, v| h.merge(v.code => v) },
+          :key  => @pool.inject({}) {|h, v| h.merge(v.key  => v) },
         }
       end
 
@@ -141,9 +141,9 @@ module StaticRecord
         end
         case key
         when Symbol, String
-          @pool_hash[:keys][key.to_sym]
+          @pool_hash[:key][key.to_sym]
         else
-          @pool_hash[:codes][key]
+          @pool_hash[:code][key]
         end
       end
     end
