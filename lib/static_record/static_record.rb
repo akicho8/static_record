@@ -50,7 +50,6 @@ module StaticRecord
       class_attribute :static_record_configuration
       self.static_record_configuration = {
         :attr_reader => [],
-        :support_key => nil,
       }.merge(options)
 
       if block_given?
@@ -132,9 +131,6 @@ module StaticRecord
           :codes => @pool.inject({}) {|h, v| h.merge(v.code => v) },
           :keys  => @pool.inject({}) {|h, v| h.merge(v.key  => v) },
         }
-        Array.wrap(static_record_configuration[:support_key]).each do |pk|
-          @pool_hash[pk] = @pool.inject({}){|h, v| h.merge(v.send(pk) => v)}
-        end
       end
 
       private
@@ -145,15 +141,7 @@ module StaticRecord
         end
         case key
         when Symbol, String
-          v = @pool_hash[:keys][key.to_sym]
-          if !v
-            Array(static_record_configuration[:support_key]).each do |pk|
-              if v = @pool_hash.fetch(pk)[key]
-                break
-              end
-            end
-          end
-          v
+          @pool_hash[:keys][key.to_sym]
         else
           @pool_hash[:codes][key]
         end
