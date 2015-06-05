@@ -108,29 +108,27 @@ module StaticRecord
       end
 
       def each(&block)
-        @pool.each(&block)
+        @values.each(&block)
       end
 
       def keys
-        @keys ||= @pool_hash[:key].keys
+        @keys ||= @values_hash[:key].keys
       end
 
       def codes
-        @codes ||= @pool_hash[:code].keys
+        @codes ||= @values_hash[:code].keys
       end
 
-      def values
-        @pool
-      end
+      attr_reader :values
 
       def static_record_list_set(list)
         @keys = nil
         @codes = nil
-        @pool = list.collect.with_index {|a, i| new(a.merge(:_index => i)) }
-        @pool_hash = {
-          :code => @pool.inject({}) {|h, v| h.merge(v.code => v) },
-          :key  => @pool.inject({}) {|h, v| h.merge(v.key  => v) },
-        }
+        @values = list.collect.with_index {|e, i| new(e.merge(:_index => i)) }.freeze
+        @values_hash = {}
+        [:code, :key].each do |pk|
+          @values_hash[pk] = @values.inject({}) {|a, e| a.merge(e.send(pk) => e) }
+        end
       end
 
       private
@@ -141,9 +139,9 @@ module StaticRecord
         end
         case key
         when Symbol, String
-          @pool_hash[:key][key.to_sym]
+          @values_hash[:key][key.to_sym]
         else
-          @pool_hash[:code][key]
+          @values_hash[:code][key]
         end
       end
     end

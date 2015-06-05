@@ -1,97 +1,89 @@
 # -*- coding: utf-8 -*-
 require 'spec_helper'
 
-class FooInfo1
+class Model
   include StaticRecord
-  list = [
-    {:code => 10, :key => :a, :name => "A"},
-    {:code => 20, :key => :b, :name => "B"},
-  ]
-  static_record(list, :attr_reader => :name)
-end
-
-class FooInfo2
-  include StaticRecord
-  list = [
+  static_record [
     {:name => "A"},
     {:name => "B"},
-  ]
-  static_record(list, :attr_reader => :name)
+  ], :attr_reader => :name
 end
 
-class FooInfo3
+class Legacy
   include StaticRecord
-  list = [
-    {:code => 10},
-    {:code => 20},
-  ]
-  static_record(list)
-end
-
-FooInfo4 = StaticRecord.create [
-  {:key => :a},
-  {:key => :b},
-]
-
-FooInfo5 = StaticRecord.define do
-  [
-    {:key => :a},
-    {:key => :b},
-  ]
+  static_record [
+    {:code => 10, :key => :a, :name => "A"},
+    {:code => 20, :key => :b, :name => "B"},
+  ], :attr_reader => :name
 end
 
 RSpec.describe StaticRecord do
-  it "コードやキーは自分で定義する場合" do
-    assert_equal "A", FooInfo1[10].name
+  context "便利クラスメソッド" do
+    it "each" do
+      assert Model.each
+    end
+
+    it "keys" do
+      assert_equal [:_key0, :_key1], Model.keys
+    end
+
+    it "values" do
+      assert_equal Model.each.to_a, Model.values
+    end
   end
 
-  it "コードもキーも自動で振る場合" do
-    assert_equal "A", FooInfo2[0].name
+  context "添字アクセス" do
+    it "コードもキーも自動で振る場合" do
+      assert_equal "A", Model[0].name
+    end
+
+    it "対応するキーがなくなてもエラーにならない" do
+      assert_nothing_raised { Model[:unknown] }
+    end
+
+    it "fetchの場合、対応するキーがなければエラーになる" do
+      assert_raises { Model.fetch(:unknown) }
+    end
   end
 
-  it "キーの配列だけ欲しい" do
-    assert_equal [:_key0, :_key1], FooInfo2.keys
+  context "再設定" do
+    before do
+      @model = StaticRecord.define{[{key: :a}]}
+      @model.static_record_list_set [{key: :b}, {key: :c}]
+    end
+    it "変更できている" do
+      assert_equal [:b, :c], @model.keys
+      assert_equal [0, 1], @model.codes
+    end
   end
 
-  it "値の配列" do
-    assert_equal FooInfo2.each.to_a, FooInfo2.values
-  end
+  context "微妙な仕様" do
+    it "create の使用例" do
+      model = StaticRecord.create [{:key => :a}]
+      assert_equal :a, model.first.key
+    end
 
-  it "name メソッドは自動的に定義" do
-    assert_equal true, FooInfo3.instance_methods.include?(:name)
-  end
+    it "define の使用例" do
+      model = StaticRecord.define { [{:key => :a}] }
+      assert_equal :a, model.first.key
+    end
 
-  it "create で無名クラスを返す" do
-    assert_equal :a, FooInfo4.first.key
-  end
+    it "キーは配列で指定するとアンダーバー付きのシンボルになる" do
+      assert_equal [:id_desc], StaticRecord.create([{:key => [:id, :desc]}]).keys
+    end
 
-  it "define で無名クラスを返す" do
-    assert_equal :a, FooInfo5.first.key
-  end
-
-  it "キーは配列で指定するとアンダーバー付きのシンボルになる" do
-    assert_equal [:id_desc], StaticRecord.create([{:key => [:id, :desc]}]).keys
-  end
-
-  it "対応するキーがなくなてもエラーにならない" do
-    assert_nothing_raised { FooInfo1[:unknown] }
-  end
-
-  it "対応するキーがなければエラーになる" do
-    assert_raises { FooInfo1.fetch(:unknown) }
-  end
-
-  it "再設定する" do
-    obj = StaticRecord.define{[{key: :a}]}
-    assert_equal [:a], obj.keys
-    assert_equal [0], obj.codes
-    obj.static_record_list_set [{key: :b}, {key: :c}]
-    assert_equal [:b, :c], obj.keys
-    assert_equal [0, 1], obj.codes
+    it "nameメソッドは定義されてなければ自動的に定義" do
+      model = StaticRecord.define { [] }
+      assert_equal true, model.instance_methods.include?(:name)
+    end
   end
 
   it "キーに日本語が使える" do
-    obj = StaticRecord.define{[{key: "↑"}]}
-    assert obj["↑"]
+    model = StaticRecord.define{[{key: "あ"}]}
+    assert model["あ"]
+  end
+
+  it "コードやキーは自分で定義する場合" do
+    assert_equal "A", Legacy[10].name
   end
 end
