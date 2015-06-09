@@ -1,22 +1,4 @@
 # -*- coding: utf-8 -*-
-# 少ない数のレコードを配列やハッシュとして管理するライブラリ
-#
-#     class Foo
-#       include StaticRecord
-#       static_record [
-#         {:key => :left,  :name => "左", :vector => -1},
-#         {:key => :right, :name => "右", :vecotr => 1},
-#       ], :attr_reader => [:name, :vector]
-#     end
-#
-#     Foo[0].key     # => :left
-#     Foo[0].name    # => "左"
-#     Foo[0].vector  # => -1
-#     Foo[0].code    # => 0
-#
-#     Foo.count           # => 2
-#     Foo.collect(&:name) # => "左", "右"
-#
 require "active_support/concern"
 require "active_support/core_ext/class/attribute"
 require "active_support/core_ext/array/wrap"
@@ -80,17 +62,17 @@ module StaticRecord
         static_record_defined?
       end
 
-      # 直接参照
-      #
-      #   Foo[0]            # => object
-      #   Foo[:a]           # => object
-      #   Foo[0] == Foo[:a] # => true
-      #
-      def [](arg)
-        lookup(arg)
+      def lookup(key)
+        return key if key.kind_of? self
+        case key
+        when Symbol, String
+          @values_hash[:key][key.to_sym]
+        else
+          @values_hash[:code][key]
+        end
       end
+      alias [] lookup
 
-      # [] と同じだけど戻値がなければ例外を投げる
       def fetch(key, default = nil, &block)
         raise ArgumentError if block_given? && default
         v = lookup(key)
@@ -128,20 +110,6 @@ module StaticRecord
         @values_hash = {}
         [:code, :key].each do |pk|
           @values_hash[pk] = @values.inject({}) {|a, e| a.merge(e.send(pk) => e) }
-        end
-      end
-
-      private
-
-      def lookup(key)
-        if key.kind_of? self
-          return key
-        end
-        case key
-        when Symbol, String
-          @values_hash[:key][key.to_sym]
-        else
-          @values_hash[:code][key]
         end
       end
     end
