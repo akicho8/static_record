@@ -41,7 +41,7 @@ module StaticRecord
         yield static_record_configuration
       end
 
-      Array.wrap(options[:attr_reader]).each do |key|
+      ([:key, :code] + Array.wrap(options[:attr_reader])).each do |key|
         define_method(key) { @attributes[key.to_sym] }
       end
 
@@ -90,9 +90,7 @@ module StaticRecord
         v
       end
 
-      def each(&block)
-        @values.each(&block)
-      end
+      delegate :each, :to => :values
 
       def keys
         @keys ||= @values_hash[:key].keys
@@ -107,38 +105,31 @@ module StaticRecord
       def static_record_list_set(list)
         @keys = nil
         @codes = nil
-        @values = list.collect.with_index {|e, i|
-          new(e.merge(:_index => i))
-        }.freeze
+        @values = list.collect.with_index {|e, i| new(_attributes_normalize(e, i)) }.freeze
         @values_hash = {}
         [:code, :key].each do |pk|
           @values_hash[pk] = @values.inject({}) {|a, e| a.merge(e.send(pk) => e) }
         end
       end
+
+      private
+
+      def _attributes_normalize(attrs, index)
+        key = attrs[:key] || "_key#{index}".freeze
+        if key.kind_of? Array
+          key = key.join("_")
+        end
+        attrs.merge(:code => attrs[:code] || index, :key => key.to_sym)
+      end
     end
 
     attr_reader :attributes
 
-    delegate :[], :to => :@attributes
+    delegate :[], :to => :attributes
     delegate :to_s, :to => :name
 
     def initialize(attributes)
       @attributes = attributes
-
-      if @attributes[:key]
-        if @attributes[:key].kind_of? Array
-          @attributes[:key] = @attributes[:key].join("_")
-        end
-        @attributes[:key] = @attributes[:key].to_sym
-      end
-    end
-
-    def code
-      @attributes[:code] || @attributes[:_index]
-    end
-
-    def key
-      @attributes[:key] || "_key#{@attributes[:_index]}".to_sym
     end
   end
 end

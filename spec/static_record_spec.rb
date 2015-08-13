@@ -61,6 +61,14 @@ RSpec.describe StaticRecord do
     end
   end
 
+  context "インスタンスのアクセサー" do
+    it do
+      assert instance.attributes
+      assert instance.key
+      assert instance.code
+    end
+  end
+
   context "再設定" do
     before do
       @model = StaticRecord.define{[{key: :a}]}
