@@ -1,33 +1,36 @@
 # -*- coding: utf-8 -*-
 require "active_support/concern"
+require "active_support/core_ext/module/concerning"
 require "active_support/core_ext/class/attribute"
 require "active_support/core_ext/array/wrap"
 require "active_model"
 
 module StaticRecord
+  class << self
+    def define(**options, &block)
+      Class.new do
+        include StaticRecord
+        static_record block.call, options
+      end
+    end
+
+    def create(*args, &block)
+      Class.new do
+        include StaticRecord
+        static_record *args, &block
+      end
+    end
+  end
+
   extend ActiveSupport::Concern
 
-  def self.define(**options, &block)
-    Class.new do
-      include StaticRecord
-      static_record block.call, options
-    end
-  end
-
-  def self.create(*args, &block)
-    Class.new do
-      include StaticRecord
-      static_record *args, &block
-    end
-  end
-
-  module ClassMethods
+  class_methods do
     def static_record(list, **options, &block)
       return if static_record_defined?
 
       extend ActiveModel::Translation
       extend Enumerable
-      include SingletonMethods
+      include ::StaticRecord::SingletonMethods
 
       class_attribute :static_record_configuration
       self.static_record_configuration = {
@@ -54,10 +57,8 @@ module StaticRecord
     end
   end
 
-  module SingletonMethods
-    extend ActiveSupport::Concern
-
-    module ClassMethods
+  concern :SingletonMethods do
+    class_methods do
       def static_record?
         static_record_defined?
       end
@@ -106,7 +107,9 @@ module StaticRecord
       def static_record_list_set(list)
         @keys = nil
         @codes = nil
-        @values = list.collect.with_index {|e, i| new(e.merge(:_index => i)) }.freeze
+        @values = list.collect.with_index {|e, i|
+          new(e.merge(:_index => i))
+        }.freeze
         @values_hash = {}
         [:code, :key].each do |pk|
           @values_hash[pk] = @values.inject({}) {|a, e| a.merge(e.send(pk) => e) }
@@ -115,6 +118,9 @@ module StaticRecord
     end
 
     attr_reader :attributes
+
+    delegate :[], :to => :@attributes
+    delegate :to_s, :to => :name
 
     def initialize(attributes)
       @attributes = attributes
@@ -133,14 +139,6 @@ module StaticRecord
 
     def key
       @attributes[:key] || "_key#{@attributes[:_index]}".to_sym
-    end
-
-    def to_s
-      name
-    end
-
-    def [](v)
-      @attributes[v]
     end
   end
 end

@@ -18,6 +18,8 @@ class Legacy
 end
 
 RSpec.describe StaticRecord do
+  let(:instance) { Model.first }
+
   context "便利クラスメソッド" do
     it "each" do
       assert Model.each
@@ -32,7 +34,7 @@ RSpec.describe StaticRecord do
     end
   end
 
-  context "添字アクセス" do
+  context "クラスに対しての添字アクセス" do
     it "コードもキーも自動で振る場合" do
       assert_equal "A", Model[0].name
     end
@@ -43,6 +45,19 @@ RSpec.describe StaticRecord do
 
     it "fetchの場合、対応するキーがなければエラーになる" do
       assert_raises { Model.fetch(:unknown) }
+    end
+  end
+
+  context "インスタンスに対しての添字アクセス" do
+    it do
+      instance[:name].should == "A"
+      instance[:xxxx].should == nil
+    end
+  end
+
+  context "to_s" do
+    it do
+      instance.to_s.should == "A"
     end
   end
 
