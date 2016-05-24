@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 require "active_support/concern"
 require "active_support/core_ext/module/concerning"
 require "active_support/core_ext/class/attribute"
