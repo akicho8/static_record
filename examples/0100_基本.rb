@@ -1,16 +1,13 @@
-# -*- coding: utf-8 -*-
 $LOAD_PATH.unshift "../lib"
 require "static_record"
 
 class Foo
   include StaticRecord
   static_record [
-    {:code => 1, :key => :a, :name => "A"},
-    {:code => 2, :key => :b, :name => "B"},
-    {:code => 3, :key => :c, :name => "C"},
+    {:key => :male,   :name => "男"},
+    {:key => :female, :name => "女"},
   ], :attr_reader => :name
 end
 
-Foo[2].name                      # => "B"
-Foo[:b].name                     # => "B"
-Foo.collect(&:to_s)              # => ["A", "B", "C"]
+Foo[:male].name                 # => "男"
+Foo[:female].name               # => "女"
