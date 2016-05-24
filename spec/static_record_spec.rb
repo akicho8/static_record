@@ -108,4 +108,10 @@ RSpec.describe StaticRecord do
   it "コードやキーは自分で定義する場合" do
     assert_equal "A", Legacy[10].name
   end
+
+  it "値はfreezeされる" do
+    expect {
+      Model.first.name.upcase!
+    }.to raise_error(RuntimeError)
+  end
 end

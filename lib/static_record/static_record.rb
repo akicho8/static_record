@@ -128,7 +128,7 @@ module StaticRecord
     delegate :to_s, :to => :name
 
     def initialize(attributes)
-      @attributes = attributes
+      @attributes = attributes.inject({}) {|a, (k, v)| a.merge(k.freeze => v ? v.freeze : v) }
     end
   end
 end
