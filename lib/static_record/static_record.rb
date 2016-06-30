@@ -41,8 +41,14 @@ module StaticRecord
         yield static_record_configuration
       end
 
+      if static_record_configuration[:auto_attr_reader]
+        _attr_reader = list.inject([]) { |a, e| a | e.keys.collect(&:to_sym) }
+      else
+        _attr_reader = static_record_configuration[:attr_reader]
+      end
+
       include Module.new.tap { |m|
-        ([:key, :code] + Array.wrap(static_record_configuration[:attr_reader])).each do |key|
+        ([:key, :code] + Array.wrap(_attr_reader)).uniq.each do |key|
           m.class_eval do
             define_method(key) { @attributes[key.to_sym] }
           end

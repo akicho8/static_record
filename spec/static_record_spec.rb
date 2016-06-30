@@ -115,7 +115,7 @@ RSpec.describe StaticRecord do
     }.to raise_error(RuntimeError)
   end
 
-  describe do
+  describe "super" do
     class Model2
       include StaticRecord
       static_record [
@@ -129,6 +129,21 @@ RSpec.describe StaticRecord do
 
     it "メソッドは裏に定義されているのでsuperを使える" do
       assert_equal "xy", Model2.first.var
+    end
+  end
+
+  describe "auto_attr_reader" do
+    class Model3
+      include StaticRecord
+      static_record [
+        {:a => 1},
+        {:b => 2},
+      ], :auto_attr_reader => true
+    end
+
+    it "attr_reader => [:a, :b] を自動的に定義" do
+      assert_equal 1, Model3.first.a
+      assert_equal nil, Model3.first.b
     end
   end
 end
