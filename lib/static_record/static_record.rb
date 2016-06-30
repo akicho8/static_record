@@ -41,13 +41,19 @@ module StaticRecord
         yield static_record_configuration
       end
 
-      ([:key, :code] + Array.wrap(options[:attr_reader])).each do |key|
-        define_method(key) { @attributes[key.to_sym] }
-      end
+      include Module.new.tap { |m|
+        ([:key, :code] + Array.wrap(static_record_configuration[:attr_reader])).each do |key|
+          m.class_eval do
+            define_method(key) { @attributes[key.to_sym] }
+          end
+        end
 
-      unless method_defined?(:name)
-        define_method(:name) { self.class.human_attribute_name(key) }
-      end
+        unless m.method_defined?(:name)
+          m.class_eval do
+            define_method(:name) { self.class.human_attribute_name(key) }
+          end
+        end
+      }
 
       static_record_list_set(list)
     end

@@ -114,4 +114,21 @@ RSpec.describe StaticRecord do
       Model.first.name.upcase!
     }.to raise_error(RuntimeError)
   end
+
+  describe do
+    class Model2
+      include StaticRecord
+      static_record [
+        {:var => "x"},
+      ], :attr_reader => :var
+
+      def var
+        super + "y"
+      end
+    end
+
+    it "メソッドは裏に定義されているのでsuperを使える" do
+      assert_equal "xy", Model2.first.var
+    end
+  end
 end
