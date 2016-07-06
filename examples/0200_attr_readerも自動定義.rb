@@ -6,7 +6,7 @@ class Foo
   static_record [
     {:a => 1},
     {:b => 2},
-  ], :auto_attr_reader => true
+  ], :attr_reader_auto => true
 end
 
 Foo.first.a                     # => 1

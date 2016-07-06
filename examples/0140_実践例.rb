@@ -6,7 +6,7 @@ class Direction
   static_record [
     {:key => :left,  :name => "左", :vector => [-1,  0]},
     {:key => :right, :name => "右", :vector => [ 1,  0]},
-  ], :auto_attr_reader => true
+  ], :attr_reader_auto => true
 
   def long_name
     "#{name}方向"

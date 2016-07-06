@@ -132,13 +132,13 @@ RSpec.describe StaticRecord do
     end
   end
 
-  describe "auto_attr_reader" do
+  describe "attr_reader_auto" do
     class Model3
       include StaticRecord
       static_record [
         {:a => 1},
         {:b => 2},
-      ], :auto_attr_reader => true
+      ], :attr_reader_auto => true
     end
 
     it "attr_reader => [:a, :b] を自動的に定義" do

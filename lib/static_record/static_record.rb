@@ -41,7 +41,7 @@ module StaticRecord
         yield static_record_configuration
       end
 
-      if static_record_configuration[:auto_attr_reader]
+      if static_record_configuration[:attr_reader_auto]
         _attr_reader = list.inject([]) { |a, e| a | e.keys.collect(&:to_sym) }
       else
         _attr_reader = static_record_configuration[:attr_reader]
