@@ -127,7 +127,7 @@ module StaticRecord
       private
 
       def _attributes_normalize(attrs, index)
-        key = attrs[:key] || "_key#{index}".freeze
+        key = attrs[:key] || "_key#{index}"
         if key.kind_of? Array
           key = key.join("_")
         end
