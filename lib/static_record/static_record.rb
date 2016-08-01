@@ -102,6 +102,12 @@ module StaticRecord
         v
       end
 
+      def fetch_if(key, default = nil, &block)
+        if key
+          fetch(key, default, &block)
+        end
+      end
+
       delegate :each, :to => :values
 
       def keys

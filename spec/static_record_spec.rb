@@ -45,6 +45,10 @@ RSpec.describe StaticRecord do
     it "fetchの場合、対応するキーがなければエラーになる" do
       assert_raises { Model.fetch(:unknown) }
     end
+
+    it "fetch_if" do
+      assert_nothing_raised { Model.fetch_if(nil) }
+    end
   end
 
   context "インスタンスに対しての添字アクセス" do
