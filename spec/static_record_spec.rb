@@ -150,4 +150,11 @@ RSpec.describe StaticRecord do
       assert_equal nil, Model3.first.b
     end
   end
+
+  describe "key と code の重複はダメ" do
+    it do
+      expect { Model.static_record_list_set([{:key  => :a}, {:key  => :a}]) }.to raise_error(ArgumentError)
+      expect { Model.static_record_list_set([{:code =>  0}, {:code =>  0}]) }.to raise_error(ArgumentError)
+    end
+  end
 end

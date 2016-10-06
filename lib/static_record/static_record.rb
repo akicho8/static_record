@@ -126,7 +126,11 @@ module StaticRecord
         @values = list.collect.with_index {|e, i| new(_attributes_normalize(e, i)) }.freeze
         @values_hash = {}
         [:code, :key].each do |pk|
-          @values_hash[pk] = @values.inject({}) {|a, e| a.merge(e.send(pk) => e) }
+          @values_hash[pk] = @values.inject({}) do |a, e|
+            a.merge(e.send(pk) => e) do |key, old_val, new_val|
+              raise ArgumentError, "#{name} で #{pk.inspect} の #{key.inspect} が重複しています\n  古い値: #{old_val.inspect}\n新しい値: #{new_val.inspect}"
+            end
+          end
         end
       end
 
