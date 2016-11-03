@@ -58,7 +58,11 @@ module StaticRecord
 
         unless m.method_defined?(:name)
           m.class_eval do
-            define_method(:name) { self.class.human_attribute_name(key) }
+            define_method(:name) do
+              if self.class.name
+                self.class.human_attribute_name(key)
+              end
+            end
           end
         end
       }

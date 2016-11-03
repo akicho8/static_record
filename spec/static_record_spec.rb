@@ -157,4 +157,19 @@ RSpec.describe StaticRecord do
       expect { Model.static_record_list_set([{:code =>  0}, {:code =>  0}]) }.to raise_error(ArgumentError)
     end
   end
+
+  describe "無名クラスで human_attribute_name は使えない" do
+    let(:model) do
+      Class.new do
+        include StaticRecord
+        static_record [
+          {:foo => 1},
+        ], :attr_reader_auto => true
+      end
+    end
+
+    it "エラーにならない " do
+      model.first.name.should == nil
+    end
+  end
 end
