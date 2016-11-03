@@ -7,6 +7,7 @@ require "active_model"
 
 module StaticRecord
   class << self
+    # DEPRECATION
     def define(**options, &block)
       Class.new do
         include StaticRecord
@@ -14,6 +15,7 @@ module StaticRecord
       end
     end
 
+    # DEPRECATION
     def create(*args, &block)
       Class.new do
         include StaticRecord
@@ -96,7 +98,11 @@ module StaticRecord
           when default
             v = default
           else
-            raise KeyError, "#{name}.fetch(#{key.inspect}) では何にもマッチしません。\nkeys: #{keys.inspect}\ncodes: #{codes.inspect}"
+            raise KeyError, [
+              "#{name}.fetch(#{key.inspect}) では何にもマッチしません",
+              "keys: #{keys.inspect}",
+              "codes: #{codes.inspect}",
+            ].join("\n")
           end
         end
         v
@@ -128,7 +134,11 @@ module StaticRecord
         [:code, :key].each do |pk|
           @values_hash[pk] = @values.inject({}) do |a, e|
             a.merge(e.send(pk) => e) do |key, old_val, new_val|
-              raise ArgumentError, "#{name} で #{pk.inspect} の #{key.inspect} が重複しています\n  古い値: #{old_val.inspect}\n新しい値: #{new_val.inspect}"
+              raise ArgumentError, [
+                "#{name}##{pk} の #{key.inspect} が重複しています",
+                "  古い値: #{old_val.attributes.inspect}",
+                "新しい値: #{new_val.attributes.inspect}",
+              ].join("\n")
             end
           end
         end
