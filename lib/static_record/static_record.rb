@@ -6,24 +6,6 @@ require "active_support/core_ext/array/wrap"
 require "active_model"
 
 module StaticRecord
-  class << self
-    # DEPRECATION
-    def define(**options, &block)
-      Class.new do
-        include StaticRecord
-        static_record block.call, options
-      end
-    end
-
-    # DEPRECATION
-    def create(*args, &block)
-      Class.new do
-        include StaticRecord
-        static_record *args, &block
-      end
-    end
-  end
-
   extend ActiveSupport::Concern
 
   class_methods do

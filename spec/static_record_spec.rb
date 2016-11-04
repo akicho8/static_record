@@ -17,6 +17,13 @@ class Legacy
 end
 
 RSpec.describe StaticRecord do
+  def __define(table)
+    Class.new {
+      include StaticRecord
+      static_record table, :attr_reader_auto => true
+    }
+  end
+
   let(:instance) { Model.first }
 
   context "便利クラスメソッド" do
@@ -74,7 +81,7 @@ RSpec.describe StaticRecord do
 
   context "再設定" do
     before do
-      @model = StaticRecord.define{[{key: :a}]}
+      @model = __define [{key: :a}]
       @model.static_record_list_set [{key: :b}, {key: :c}]
     end
     it "変更できている" do
@@ -84,28 +91,19 @@ RSpec.describe StaticRecord do
   end
 
   context "微妙な仕様" do
-    it "create の使用例" do
-      model = StaticRecord.create [{:key => :a}]
-      assert_equal :a, model.first.key
-    end
-
-    it "define の使用例" do
-      model = StaticRecord.define { [{:key => :a}] }
-      assert_equal :a, model.first.key
-    end
-
     it "キーは配列で指定するとアンダーバー付きのシンボルになる" do
-      assert_equal [:id_desc], StaticRecord.create([{:key => [:id, :desc]}]).keys
+      model = __define [{:key => [:id, :desc]}]
+      assert_equal [:id_desc], model.keys
     end
 
     it "nameメソッドは定義されてなければ自動的に定義" do
-      model = StaticRecord.define { [] }
+      model = __define []
       assert_equal true, model.instance_methods.include?(:name)
     end
   end
 
   it "キーに日本語が使える" do
-    model = StaticRecord.define{[{key: "あ"}]}
+    model = __define [{key: "あ"}]
     assert model["あ"]
   end
 
@@ -159,14 +157,7 @@ RSpec.describe StaticRecord do
   end
 
   describe "無名クラスで human_attribute_name は使えない" do
-    let(:model) do
-      Class.new do
-        include StaticRecord
-        static_record [
-          {:foo => 1},
-        ], :attr_reader_auto => true
-      end
-    end
+    let(:model) { __define [{:foo => 1}] }
 
     it "エラーにならない " do
       model.first.name.should == nil
