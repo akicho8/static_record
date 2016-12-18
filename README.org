@@ -27,7 +27,7 @@ Direction[:up]                  # => nil
 Direction.fetch(:up) rescue $!  # => #<KeyError: Direction.fetch(:up) では何にもマッチしません。
 #+END_SRC
 
-*** code を自分で決めたいときは？
+*** =code= を自分で決めたいときは？
 
 #+BEGIN_SRC ruby
 class Foo
@@ -46,7 +46,7 @@ Foo.collect(&:code) # => [1, 2, 3]
 
 *** 配列として回すには？
 
-    Enumerable が入っているので each 系メソッドが利用可
+    =Enumerable= が入っているので =each= 系メソッドが利用可
 
 #+BEGIN_SRC ruby
 Foo.each {|v| ... }
@@ -68,7 +68,7 @@ Foo[1].name  # => "A"
 Foo[:a].name # => "A"
 #+END_SRC
 
-*** インスタンスは code と key に必ず反応する
+*** インスタンスは =code= と =key= に必ず反応する
 
 #+BEGIN_SRC ruby
 object = Foo.first
