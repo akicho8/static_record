@@ -78,15 +78,15 @@ object.code # => 1
 
 *** attr_reader オプションとは？
 
-    属性は @attributes[:xxx] で参照できるが、頻繁に参照するときには面倒なので :attr_reader => :xxx でメソッド化している。
+    属性は =@attributes[:xxx]= で参照できるが、頻繁に参照するときには面倒なので =:attr_reader => :xxx= でメソッド化している。
 
 *** attr_reader_auto オプションとは？
 
-    属性をすべて attr_reader する
+    属性をすべて =attr_reader= する
 
 *** レコードの属性に気軽にアクセスさせたくないときは？
 
-    attr_reader でメソッド定義せず `object.attributes[:xxx]' で参照する。
+    =attr_reader= でメソッド定義せず =object.attributes[:xxx]= で参照する。
 
 *** インスタンスにメソッドを追加するには？
 
@@ -98,7 +98,7 @@ object.code # => 1
 
 *** to_s メソッドが定義されている？
 
-    name の別名で to_s を定義しているので name のままでいいなら "#{object}" と書いていい。
+    name の別名で to_s を定義しているので name のままでいいなら ="#{object}"= と書いていい。
 
 *** キーがなければエラーとするには？
 
