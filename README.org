@@ -76,11 +76,11 @@ object.key  # => :a
 object.code # => 1
 #+END_SRC
 
-*** attr_reader オプションとは？
+*** =attr_reader= オプションとは？
 
     属性は =@attributes[:xxx]= で参照できるが、頻繁に参照するときには面倒なので =:attr_reader => :xxx= でメソッド化している。
 
-*** attr_reader_auto オプションとは？
+*** =attr_reader_auto= オプションとは？
 
     属性をすべて =attr_reader= する
 
@@ -92,32 +92,32 @@ object.code # => 1
 
     そのために新しくクラスを作っているので普通に定義すればいい。
 
-*** name メソッドは特別？
+*** =name= メソッドは特別？
 
-    name が定義されてなかったら key の翻訳を返す name メソッドを定義している。
+    =name= が定義されてなかったら =key= の翻訳を返す =name= メソッドを定義している。
 
-*** to_s メソッドが定義されている？
+*** =to_s= メソッドが定義されている？
 
-    name の別名で to_s を定義しているので name のままでいいなら ="#{object}"= と書いていい。
+    =name= の別名で =to_s= を定義している。
 
 *** キーがなければエラーとするには？
 
 #+BEGIN_SRC ruby
-Foo.fetch(:unknown)           # => <KeyError: ...>
+Foo.fetch(:xxx)              # => <KeyError: ...>
 #+END_SRC
 
     以下は全部同じ
 
 #+BEGIN_SRC ruby
-Foo[:unknown] || :default     # => :default
-Foo.fetch(:unknown, :default} # => :default
-Foo.fetch(:unknown){:default} # => :default
+Foo[:xxx] || :default        # => :default
+Foo.fetch(:xxx, :default}    # => :default
+Foo.fetch(:xxx) { :default } # => :default
 #+END_SRC
 
 *** キーがあったときだけ引くには？
 
 #+BEGIN_SRC ruby
-Foo.fetch_if(nil)             # => nil
-Foo.fetch_if(:right)          # => #<Foo:... @attributes={...}>
-Foo.fetch_if(:unknown)        # => <KeyError: ...>
+Foo.fetch_if(nil)            # => nil
+Foo.fetch_if(:a)             # => #<Foo:... @attributes={...}>
+Foo.fetch_if(:xxx)           # => <KeyError: ...>
 #+END_SRC
