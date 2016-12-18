@@ -1,6 +1,3 @@
-#+OPTIONS: toc:nil num:nil author:nil creator:nil \n:nil |:t
-#+OPTIONS: @:t ::t ^:t -:t f:t *:t <:t
-
 * 少数のレコード簡単に扱うライブラリ
 
 #+BEGIN_SRC ruby
@@ -83,6 +80,10 @@ object.code # => 1
 
     属性は @attributes[:xxx] で参照できるが、頻繁に参照するときには面倒なので :attr_reader => :xxx でメソッド化している。
 
+*** attr_reader_auto オプションとは？
+
+    属性をすべて attr_reader する
+
 *** レコードの属性に気軽にアクセスさせたくないときは？
 
     attr_reader でメソッド定義せず object.attributes[:xxx] で参照する。
@@ -98,22 +99,6 @@ object.code # => 1
 *** to_s メソッドが定義されている？
 
     name の別名で to_s を定義しているので name のままでいいなら "#{object}" と書いていい。
-
-*** 動的に変わる検索条件リストを作るには？
-
-#+BEGIN_SRC ruby
-selection = StaticRecord.define(:attr_reader => :name) do
-  [
-    {:key => :a, :name => "A"},
-    {:key => :b, :name => "B"},
-    {:key => :c, :name => "C"},
-  ]
-end
-
-selection.first.key # => :a
-#+END_SRC
-
-    StaticRecord.define で無名クラスが返ってくる。
 
 *** キーがなければエラーとするには？
 
