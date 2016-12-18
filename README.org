@@ -114,7 +114,7 @@ Foo.fetch(:xxx, :default}    # => :default
 Foo.fetch(:xxx) { :default } # => :default
 #+END_SRC
 
-*** キーがあったときだけ引くには？
+*** 値が nil だったらスルーしたいときは？
 
 #+BEGIN_SRC ruby
 Foo.fetch_if(nil)            # => nil
