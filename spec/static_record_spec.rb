@@ -111,10 +111,8 @@ RSpec.describe StaticRecord do
     assert_equal "A", Legacy[10].name
   end
 
-  it "値はfreezeされる" do
-    expect {
-      Model.first.name.upcase!
-    }.to raise_error(RuntimeError)
+  it "メモ化が使えなくなるため値のfreezeはしない" do
+    Model.first.name.upcase!
   end
 
   describe "super" do
