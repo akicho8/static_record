@@ -1,9 +1,11 @@
+# freeze してしまうとこれらのメモ化ができなくなる
+
 $LOAD_PATH.unshift "../lib"
 require "static_record"
 
 class C
   def self.x
-    @x ||= 1
+    @x ||= "OK"
   end
 end
 
@@ -14,11 +16,9 @@ class C2
   ], :attr_reader_auto => true
 
   def x
-    @x ||= 1
+    @x ||= "OK"
   end
 end
 
-C2.first.x                      # => 1
-C2.first.model.x                # => 
-# ~> -:6:in `x': can't modify frozen #<Class:C> (RuntimeError)
-# ~> 	from -:22:in `<main>'
+C2.first.x                      # => "OK"
+C2.first.model.x                # => "OK"

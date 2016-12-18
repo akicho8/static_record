@@ -103,7 +103,7 @@ object.code # => 1
 *** キーがなければエラーとするには？
 
 #+BEGIN_SRC ruby
-Foo.fetch(:unknown)           # => ArgumentError
+Foo.fetch(:unknown)           # => <KeyError: ...>
 #+END_SRC
 
     以下は全部同じ
@@ -112,4 +112,12 @@ Foo.fetch(:unknown)           # => ArgumentError
 Foo[:unknown] || :default     # => :default
 Foo.fetch(:unknown, :default} # => :default
 Foo.fetch(:unknown){:default} # => :default
+#+END_SRC
+
+*** キーがあったときだけ引くには？
+
+#+BEGIN_SRC ruby
+Foo.fetch_if(nil)             # => nil
+Foo.fetch_if(:right)          # => #<Foo:... @attributes={...}>
+Foo.fetch_if(:unknown)        # => <KeyError: ...>
 #+END_SRC

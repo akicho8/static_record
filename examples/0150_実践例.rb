@@ -24,4 +24,4 @@ Direction[:right].long_name     # => "右方向"
 Direction[1].key                # => :right
 
 Direction[:up]                  # => nil
-Direction.fetch(:up) rescue $!  # => #<KeyError: Direction.fetch(:up) では何にもマッチしません。
+Direction.fetch(:up) rescue $!  # => #<KeyError: Direction.fetch(:up) では何にもマッチしません

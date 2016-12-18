@@ -8,4 +8,4 @@ class Foo
   ], :attr_reader => :name
 end
 
-Foo["↑"].name                      # => "上"
+Foo["↑"].name                  # => "上"
