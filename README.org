@@ -86,7 +86,7 @@ object.code # => 1
 
 *** レコードの属性に気軽にアクセスさせたくないときは？
 
-    attr_reader でメソッド定義せず object.attributes[:xxx] で参照する。
+    attr_reader でメソッド定義せず `object.attributes[:xxx]' で参照する。
 
 *** インスタンスにメソッドを追加するには？
 
