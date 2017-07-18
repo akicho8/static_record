@@ -3,24 +3,24 @@ require 'spec_helper'
 class Model
   include StaticRecord
   static_record [
-    {:name => "A"},
-    {:name => "B"},
-  ], :attr_reader => :name
+    {name: "A"},
+    {name: "B"},
+  ], attr_reader: :name
 end
 
 class Legacy
   include StaticRecord
   static_record [
-    {:code => 10, :key => :a, :name => "A"},
-    {:code => 20, :key => :b, :name => "B"},
-  ], :attr_reader => :name
+    {code: 10, key: :a, name: "A"},
+    {code: 20, key: :b, name: "B"},
+  ], attr_reader: :name
 end
 
 RSpec.describe StaticRecord do
   def __define(table)
     Class.new {
       include StaticRecord
-      static_record table, :attr_reader_auto => true
+      static_record table, attr_reader_auto: true
     }
   end
 
@@ -92,7 +92,7 @@ RSpec.describe StaticRecord do
 
   context "微妙な仕様" do
     it "キーは配列で指定するとアンダーバー付きのシンボルになる" do
-      model = __define [{:key => [:id, :desc]}]
+      model = __define [{key: [:id, :desc]}]
       assert_equal [:id_desc], model.keys
     end
 
@@ -119,8 +119,8 @@ RSpec.describe StaticRecord do
     class Model2
       include StaticRecord
       static_record [
-        {:var => "x"},
-      ], :attr_reader => :var
+        {var: "x"},
+      ], attr_reader: :var
 
       def var
         super + "y"
@@ -136,9 +136,9 @@ RSpec.describe StaticRecord do
     class Model3
       include StaticRecord
       static_record [
-        {:a => 1},
-        {:b => 2},
-      ], :attr_reader_auto => true
+        {a: 1},
+        {b: 2},
+      ], attr_reader_auto: true
     end
 
     it "attr_reader => [:a, :b] を自動的に定義" do
@@ -149,13 +149,13 @@ RSpec.describe StaticRecord do
 
   describe "key と code の重複はダメ" do
     it do
-      expect { Model.static_record_list_set([{:key  => :a}, {:key  => :a}]) }.to raise_error(ArgumentError)
-      expect { Model.static_record_list_set([{:code =>  0}, {:code =>  0}]) }.to raise_error(ArgumentError)
+      expect { Model.static_record_list_set([{key: :a}, {key: :a}]) }.to raise_error(ArgumentError)
+      expect { Model.static_record_list_set([{code: 0}, {code: 0}]) }.to raise_error(ArgumentError)
     end
   end
 
   describe "無名クラスで human_attribute_name は使えない" do
-    let(:model) { __define [{:foo => 1}] }
+    let(:model) { __define [{foo: 1}] }
 
     it "エラーにならない " do
       model.first.name.should == nil

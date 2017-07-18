@@ -12,8 +12,8 @@ end
 class C2
   include StaticRecord
   static_record [
-    {:model => C},
-  ], :attr_reader_auto => true
+    {model: C},
+  ], attr_reader_auto: true
 
   def x
     @x ||= "OK"

@@ -18,7 +18,7 @@ module StaticRecord
 
       class_attribute :static_record_configuration
       self.static_record_configuration = {
-        :attr_reader => [],
+        attr_reader: [],
       }.merge(options)
 
       if block_given?
@@ -100,7 +100,7 @@ module StaticRecord
         end
       end
 
-      delegate :each, :to => :values
+      delegate :each, to: :values
 
       def keys
         @keys ||= @values_hash[:key].keys
@@ -137,14 +137,14 @@ module StaticRecord
         if key.kind_of? Array
           key = key.join("_")
         end
-        attrs.merge(:code => attrs[:code] || index, :key => key.to_sym)
+        attrs.merge(code: attrs[:code] || index, key: key.to_sym)
       end
     end
 
     attr_reader :attributes
 
-    delegate :[], :to => :attributes
-    delegate :to_s, :to => :name
+    delegate :[], to: :attributes
+    delegate :to_s, to: :name
 
     def initialize(attributes)
       @attributes = attributes

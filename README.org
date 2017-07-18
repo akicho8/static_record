@@ -4,9 +4,9 @@
 class Direction
   include StaticRecord
   static_record [
-    {:key => :left,  :name => "左", :vector => [-1,  0]},
-    {:key => :right, :name => "右", :vector => [ 1,  0]},
-  ], :attr_reader_auto => true
+    {key: :left,  name: "左", vector: [-1,  0]},
+    {key: :right, name: "右", vector: [ 1,  0]},
+  ], attr_reader_auto: true
 
   def long_name
     "#{name}方向"
@@ -33,10 +33,10 @@ Direction.fetch(:up) rescue $!  # => #<KeyError: Direction.fetch(:up) では何�
 class Foo
   include StaticRecord
   static_record [
-    {:code => 1, :key => :a, :name => "A"},
-    {:code => 2, :key => :b, :name => "B"},
-    {:code => 3, :key => :c, :name => "C"},
-  ], :attr_reader => :name
+    {code: 1, key: :a, name: "A"},
+    {code: 2, key: :b, name: "B"},
+    {code: 3, key: :c, name: "C"},
+  ], attr_reader: :name
 end
 
 Foo.collect(&:code) # => [1, 2, 3]

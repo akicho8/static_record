@@ -4,8 +4,8 @@ require "static_record"
 class Foo
   include StaticRecord
   static_record [
-    {:a => 10},
-  ], :attr_reader => :a
+    {a: 10},
+  ], attr_reader: :a
 
   def a
     super * 2

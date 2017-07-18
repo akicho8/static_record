@@ -4,7 +4,7 @@ require "static_record"
 class C
   include StaticRecord
   static_record [
-    {:key => :a, :x => 1},
+    {key: :a, x: 1},
   ]
 end
 

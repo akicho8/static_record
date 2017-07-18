@@ -4,9 +4,9 @@ require "static_record"
 class Foo
   include StaticRecord
   static_record [
-    {:name => "alice"},
-    {:name => "bob"},
-  ], :attr_reader_auto => true
+    {name: "alice"},
+    {name: "bob"},
+  ], attr_reader_auto: true
 end
 
 require "active_model"

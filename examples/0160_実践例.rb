@@ -4,9 +4,9 @@ require "static_record"
 class Direction
   include StaticRecord
   static_record [
-    {:key => :left,  :name => "左", :vector => [-1,  0]},
-    {:key => :right, :name => "右", :vector => [ 1,  0]},
-  ], :attr_reader_auto => true
+    {key: :left,  name: "左", vector: [-1,  0]},
+    {key: :right, name: "右", vector: [ 1,  0]},
+  ], attr_reader_auto: true
 
   def long_name
     "#{name}方向"
