@@ -1,3 +1,5 @@
+StaticRecord は https://github.com/akicho8/memory_record として生まれ変わりました。
+
 * 少数のレコード簡単に扱うライブラリ
 
 #+BEGIN_SRC ruby
