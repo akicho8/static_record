@@ -1,4 +1,4 @@
-StaticRecord は https://github.com/akicho8/memory_record として生まれ変わりました。
+StaticRecord はもうメンテナンスしていません。かわりに [[https://github.com/akicho8/memory_record][memory_record]] gem を使ってみてください。
 
 * 少数のレコード簡単に扱うライブラリ
 
